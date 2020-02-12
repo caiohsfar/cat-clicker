@@ -2,4 +2,14 @@
   margin: 10px;
   height: 40vmin;
   pointer-events: all;
+  border-radius: 4px;
+  border: 1px solid white;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  font-size: large;
+  align-items: center;
+  justify-content: center;
 }

@@ -3,17 +3,18 @@
 import React from 'react';
 import './index.css';
 
-export default function Cat({ id, uriImage, onClick, name }) {
+export default function Cat({ id, uriImage, setClicks, name, clicks }) {
   return (
-    <div>
+    <div className="container">
       <p>{name}</p>
       <img
         id={id}
         src={uriImage}
         className="cat-image"
         alt="a cat"
-        onClick={onClick}
+        onClick={() => setClicks()}
       />
+      <p>Clicks: {clicks}</p>
     </div>
   );
 }
