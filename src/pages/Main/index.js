@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react/destructuring-assignment */
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -11,40 +15,18 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 
 import useStyles from './styles';
-import api from '../../services/api';
-import catNames from '../../assets/catNames';
 import Cat from '../../components/cat';
+import { increaseCount, getCats, setSelected } from '../../store/ducks/cats';
 
-export default function Main() {
+const catPlaceholder = require('../../assets/cat-placeholder.png');
+
+function Main(props) {
   const classes = useStyles();
-  const [cats, setCats] = useState([]);
-  const [selected, setSelected] = useState(0);
-  const randomIndex = () => Math.floor(Math.random() * 100 + 1);
+  const { selected, cats, loading } = props;
 
-  function setClicks() {
-    const newArray = [...cats];
-    newArray[selected].clicks = cats[selected].clicks + 1;
-    setCats(newArray);
-  }
   useEffect(() => {
-    function updateNames(data) {
-      return data.map(value => {
-        const name = catNames[randomIndex()];
-        const clicks = 0;
-        return { ...value, name, clicks };
-      });
-    }
-    async function getCats(limit = 0) {
-      let { data } = await api.getCats(limit);
-      data = updateNames(data);
-      setCats(oldCats => [...oldCats, ...data]);
-    }
-    getCats(10);
+    props.getCats(10);
   }, []);
-
-  useEffect(() => {
-    console.log('cat mudou');
-  }, [cats]);
 
   return (
     <div className={classes.root}>
@@ -52,7 +34,7 @@ export default function Main() {
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" noWrap>
-            Cat Clicker
+            Cat Clicker | Click on the cat!
           </Typography>
         </Toolbar>
       </AppBar>
@@ -66,14 +48,18 @@ export default function Main() {
         <div className={classes.toolbar} />
         <List>
           {cats.map((cat, index) => (
-            <ListItem onClick={() => setSelected(index)} button key={cat.id}>
+            <ListItem
+              onClick={() => props.setSelected(index)}
+              button
+              key={cat.id}
+            >
               <ListItemAvatar>
-                <Avatar alt={cat.id} src={cat.url} />
+                <Avatar alt={cat.id} src={loading ? catPlaceholder : cat.url} />
               </ListItemAvatar>
               <ListItemText
                 primary={cat.name}
                 secondary={
-                  <React.Fragment>
+                  <>
                     <Typography
                       component="span"
                       variant="body2"
@@ -82,7 +68,7 @@ export default function Main() {
                     >
                       clicks: {cat.clicks}
                     </Typography>
-                  </React.Fragment>
+                  </>
                 }
               />
             </ListItem>
@@ -92,14 +78,20 @@ export default function Main() {
       <main className={classes.content}>
         <div className={classes.toolbar} />
         {cats.length > 0 && (
-          <Cat
-            setClicks={setClicks}
-            clicks={cats[selected].clicks}
-            uriImage={cats[selected].url}
-            name={cats[selected].name}
-          />
+          <Cat data={cats[selected]} increaseCount={props.increaseCount} />
         )}
       </main>
     </div>
   );
 }
+
+const mapDispathToProps = dispatch =>
+  bindActionCreators({ increaseCount, getCats, setSelected }, dispatch);
+
+const mapStateToProps = ({ cats }) => ({
+  cats: cats.cats,
+  loading: cats.loading,
+  error: cats.error,
+  selected: cats.selectedIndex
+});
+export default connect(mapStateToProps, mapDispathToProps)(Main);

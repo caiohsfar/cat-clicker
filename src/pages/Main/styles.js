@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const drawerWidth = 240;
+const drawerWidth = 150;
 
 export default makeStyles(theme => ({
   root: {
@@ -23,11 +23,11 @@ export default makeStyles(theme => ({
   content: {
     backgroundColor: '#282c34',
     flexGrow: 1,
-    height: '1200px',
+    height: '100vmin',
     padding: theme.spacing(3)
   },
   subtitle: {
-    color: "#ddd"
+    color: '#ddd'
   },
   toolbar: theme.mixins.toolbar
 }));

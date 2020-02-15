@@ -7,12 +7,8 @@ const api = axios.create({
   }
 });
 
-const getCats = async (limit = 0) => {
-  try {
-    return await api.get(`/images/search?limit=${limit}`);
-  } catch (err) {
-    return null;
-  }
+const getCats = (limit = 0) => {
+  return api.get(`/images/search?limit=${limit}`);
 };
 
 export default {
